@@ -19,40 +19,23 @@ class UserController extends Controller
         }
 
 
-    public function register(Request $request)
+    public function register(Request $request, User $user)
     {
 
-        // $validator = Validator::make($request->all(), 
-        //             [
-        //                 'name' => 'required',
-        //                 'email' => 'required|email',
-        //                 'password' => 'required',
-        //             ]);
-
-        //         if($validator->fails()) {
-        //             // return $validator->errors();
-        //             return response()->json(['error'=>$validator->errors()], 401);
-        //         }
-
-             
-        $validator = Validator::make($request->all(), 
-                    [
-                        'name' => 'required',
-                        'email' => 'required|email|unique:users.email',
-                        'password' => 'required',
+        $this->validate($request, [
+                    'name'      => 'required',
+                    'email'     => 'required|email|unique:users',
+                    'password'  => 'required|min:6',
                     ]);
-
-                if($validator->fails()) {
-                    return response($validator->errors(), 401);
-                }
-
-
-                return response(['message' => 'Created'], 200);
-        // $input = $request->all(); 
-        // $input['password'] = bcrypt($input['password']); 
-        // $user = User::create($input); 
-        // $success['name'] =  $user->name;
-        // return response()->json(['success'=>$success]); 
+                $user = $user->create([
+                    'name'      => $request->name,
+                    'email'     => $request->email,
+                    'password'  => bcrypt($request->password)
+                    ]);
+                $response = fractal()
+                ->item($user)
+                ->toArray();
+                return response()->json($response, 201);
     	
     }
 
