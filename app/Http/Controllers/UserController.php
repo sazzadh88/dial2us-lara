@@ -30,12 +30,11 @@ class UserController extends Controller
                 $user = $user->create([
                     'name'      => $request->name,
                     'email'     => $request->email,
-                    'password'  => bcrypt($request->password)
+                    'password'  => bcrypt($request->password),
+                    
                     ]);
-                $response = fractal()
-                ->item($user)
-                ->toArray();
-                return response()->json($response, 201);
+              
+                return response()->json($user, 201);
     	
     }
 
