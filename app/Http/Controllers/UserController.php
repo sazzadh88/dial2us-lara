@@ -22,21 +22,54 @@ class UserController extends Controller
     public function register(Request $request, User $user)
     {
 
-        $this->validate($request, [
-                    'name'      => 'required',
-                    'email'     => 'required|email|unique:users',
-                    'password'  => 'required|min:6',
-                    ]);
-                $user = $user->create([
-                    'name'      => $request->name,
-                    'email'     => $request->email,
-                    'password'  => bcrypt($request->password),
-                    
-                    ]);
-              
-                return response()->json($user, 201);
-    	
+        $validator = Validator::make($request->all(), $this->rules(), $this->messages());
+                
+        if($validator->fails()) {
+           return response([
+               'errors' => $validator->errors()
+           ], 401);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'New user has been created',
+            'data' => $user
+        ], 200);
+        
     }
+     
+     
+    /**
+     * Validation rules
+     */
+    private function rules()
+    {
+        return [
+            'name'      => 'required',
+            'email'     => 'required|email|unique:users',
+            'password'  => 'required|min:6',
+        ];
+    }
+
+    /**
+     * Validation message
+     */
+    private function messages()
+    {
+        return [
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.unique' => 'Email is already exist',
+            'password' => 'password is required'
+        ];
+    }
+
 
     /**
          * Create a new AuthController instance.
@@ -119,5 +152,19 @@ class UserController extends Controller
         public function guard()
         {
             return Auth::guard();
+        }
+
+        public function checkToken(Request $request)
+        {
+             try {
+            $tokenFetch = JWTAuth::parseToken()->authenticate();
+            if ($tokenFetch) {
+                $token = str_replace("Bearer ", "", $request->header('Authorization'));
+            } else {
+                return response()->json(['message' => 'active']);
+            }
+        } catch(\Tymon\JWTAuth\Exceptions\JWTException $e){//general JWT exception
+            return response()->json(['message' => 'expired']);
+        }
         }
 }
