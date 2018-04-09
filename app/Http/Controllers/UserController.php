@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bill;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -91,6 +92,7 @@ class UserController extends Controller
 
            if ($token = $this->guard()->attempt($credentials)) {
                return $this->respondWithToken($token);
+
            }
 
            return response()->json(['error' => 'Unauthorized'], 401);
@@ -140,7 +142,8 @@ class UserController extends Controller
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => auth('api')->factory()->getTTL() * 60
+                'user' => $this->guard()->user(),
+                'expires_in' => auth('api')->factory()->getTTL() * 3600
             ]);
         }
 
@@ -166,5 +169,23 @@ class UserController extends Controller
         } catch(\Tymon\JWTAuth\Exceptions\JWTException $e){//general JWT exception
             return response()->json(['message' => 'expired']);
         }
+        }
+
+        public function bills(Request $request){
+         
+            $bills = User::find($request->user_id)->bill()->orderBy('bill_date','desc')->get()->toArray();
+
+          
+
+            return response()->json( $bills );
+        }
+
+         public function billDetails(Request $request){
+         
+            $bill = Bill::find($request->bill_id)->toArray();
+
+          
+
+            return response()->json($bill);
         }
 }

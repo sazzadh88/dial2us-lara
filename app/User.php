@@ -34,7 +34,23 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array
      */
+
+    protected $dates = [
+            'from_date',
+        ];
+        
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function bill(){
+      return $this->hasMany('\App\Bill');
+    }
+    public function invoice(){
+      return $this->hasMany('\App\Invoice');
+    }
+
+    public function payment(){
+        return $this->hasMany('\App\Payment');
+    }
 }
