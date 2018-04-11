@@ -19,4 +19,5 @@ Route::group([
     Route::post('verify', 'UserController@checkToken');
     Route::post('/bills', 'UserController@bills');
     Route::post('/billdetails', 'UserController@billDetails');
+    Route::post('/complaints', 'UserController@getComplaints');
 });

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Validator;
+use App\Complaint;
 
 
 class UserController extends Controller
@@ -143,7 +144,7 @@ class UserController extends Controller
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'user' => $this->guard()->user(),
-                'expires_in' => auth('api')->factory()->getTTL() * 3600
+                'expires_in' => auth('api')->factory()->getTTL() * 60
             ]);
         }
 
@@ -187,5 +188,13 @@ class UserController extends Controller
           
 
             return response()->json($bill);
+        }
+        public function getComplaints(Request $request){
+         
+            $complaints = Complaint::where('user_id', $request->user_id)->get()->toArray();
+
+          
+
+            return response()->json($complaints);
         }
 }

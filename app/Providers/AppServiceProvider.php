@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $app->register(Barryvdh\Cors\ServiceProvider::class);
+        
+        Schema::defaultStringLength(191);
     }
 
     /**
@@ -26,3 +28,4 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 }
+
